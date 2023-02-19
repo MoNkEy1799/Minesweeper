@@ -49,5 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="resources\stylesheets\covered.txt" />
+    <Text Include="resources\stylesheets\uncovered.txt" />
+    <Text Include="resources\stylesheets\flagged.txt" />
   </ItemGroup>
 </Project>

@@ -10,21 +10,20 @@
 MainWindow::MainWindow(QWidget* parent)
 	: QMainWindow(parent)
 {
-	Board* board = new Board(10, 10, this);
+	Board* board = new Board(10, 10, 20, this);
 
 	m_mainWidget = new QWidget(this);
 
-	QGridLayout* layout = new QGridLayout();
-<<<<<<< HEAD
-=======
-	layout->setSpacing(0);
->>>>>>> 11f922720a7c20aca0a81d208ec49ea72086bf6d
-	layout->addWidget(board);
-	m_mainWidget->setLayout(layout);
+	m_layout = new QGridLayout();
+
+	m_layout->setSpacing(0);
+	m_layout->addWidget(board);
+	m_mainWidget->setLayout(m_layout);
 
 	setCentralWidget(m_mainWidget);
 }
 
 MainWindow::~MainWindow()
 {
+	delete m_mainWidget, m_layout;
 }
