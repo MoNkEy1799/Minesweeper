@@ -15,6 +15,10 @@ MainWindow::MainWindow(QWidget* parent)
 	m_mainWidget = new QWidget(this);
 
 	QGridLayout* layout = new QGridLayout();
+<<<<<<< HEAD
+=======
+	layout->setSpacing(0);
+>>>>>>> 11f922720a7c20aca0a81d208ec49ea72086bf6d
 	layout->addWidget(board);
 	m_mainWidget->setLayout(layout);
 

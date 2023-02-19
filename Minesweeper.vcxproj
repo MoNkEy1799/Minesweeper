@@ -94,8 +94,7 @@
     <ClInclude Include="src\Tile.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="resources\TileCovered.png" />
-    <Image Include="resources\TileUncovered.png" />
+    <Text Include="resources\stylesheets\covered.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

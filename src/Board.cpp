@@ -17,10 +17,14 @@ Board::Board(int rows, int columns, QWidget* parent)
 		}	
 	}
 
+<<<<<<< HEAD
 	layout->setSpacing(0);
 	layout->setContentsMargins(0, 0, 0, 0);
 	setLayout(layout);
 	setFixedSize(columns * 20, rows * 20);
+=======
+	setLayout(layout);
+>>>>>>> 11f922720a7c20aca0a81d208ec49ea72086bf6d
 }
 
 Board::~Board()
