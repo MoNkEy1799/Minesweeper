@@ -14,8 +14,6 @@ Board::Board(int rows, int columns, int tileSize, QWidget* parent)
 {
 	loadStyleSheets("resources/stylesheets/");
 
-	std::array<const std::string*, 3> styleSheets = { &m_coveredStyle, &m_uncoveredStyle, &m_flaggedStyle };
-
 	QGridLayout* layout = new QGridLayout(this);
 
 	for (int i = 0; i < m_rows; i++)
@@ -23,7 +21,7 @@ Board::Board(int rows, int columns, int tileSize, QWidget* parent)
 		for (int j = 0; j < m_columns; j++)
 		{
 			int id = i * m_rows + j;
-			Tile* tile = new Tile(id, m_tileSize, styleSheets, this);
+			Tile* tile = new Tile(id, m_tileSize, m_styleSheets, this);
 			m_tiles.push_back(tile);
 
 			layout->addWidget(tile, i, j);
@@ -41,7 +39,7 @@ Board::~Board()
 {
 }
 
-void Board::loadStyleSheets(const std::string dirPath)
+void Board::loadStyleSheets(const std::string& dirPath)
 {
 	std::ifstream infile;
 	std::stringstream stream[3];
@@ -51,10 +49,7 @@ void Board::loadStyleSheets(const std::string dirPath)
 	{
 		infile.open(dirPath + files[i]);
 		stream[i] << infile.rdbuf();
+		m_styleSheets[i] = stream[i].str();
 		infile.close();
 	}
-
-	m_coveredStyle = stream[0].str();
-	m_uncoveredStyle = stream[1].str();
-	m_flaggedStyle = stream[2].str();
 }

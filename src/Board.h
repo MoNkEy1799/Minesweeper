@@ -14,8 +14,8 @@ public:
 
 private:
 	int m_rows, m_columns, m_tileSize;
-	std::string m_coveredStyle, m_uncoveredStyle, m_flaggedStyle;
+	std::array<std::string, 3> m_styleSheets;
 	std::vector<Tile*> m_tiles;
 
-	void loadStyleSheets(const std::string dirPath);
+	void loadStyleSheets(const std::string& dirPath);
 };

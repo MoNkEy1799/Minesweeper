@@ -11,7 +11,7 @@ enum class TileState {COVERED, UNCOVERED, FLAGGED};
 class Tile : public QPushButton
 {
 public:
-	Tile(int id, int size, std::array<const std::string*, 3> styleSheets, QWidget* partent = nullptr);
+	Tile(int id, int size, const std::array<std::string, 3>& styleSheets, QWidget* partent = nullptr);
 	~Tile();
 
 	void uncover();
@@ -23,7 +23,8 @@ private:
 	bool m_mine;
 	static bool m_firstMove;
 	TileState m_state;
-	std::array<const std::string*, 3> m_styles;
+	const std::array<std::string, 3>& m_styles;
 
+	std::string stringFormat(std::string input, std::vector<std::string>& replace);
 	std::array<int, 2> id2RowColumn();
 };
