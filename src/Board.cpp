@@ -1,16 +1,21 @@
 #include <QGridLayout>
+#include <QMetaObject>
 
 #include <string>
 #include <fstream>
 #include <sstream>
 #include <vector>
 #include <memory>
+#include <cstdlib>
+#include <set>
+#include <iostream>
 
 #include "Board.h"
+#include "Random.h"
 
-Board::Board(int rows, int columns, int tileSize, QWidget* parent)
+Board::Board(int rows, int columns, int mineCount, int tileSize, QWidget* parent)
 	: QWidget(parent),
-	m_rows(rows), m_columns(columns), m_tileSize(tileSize)
+	m_rows(rows), m_columns(columns), m_tileSize(tileSize), m_mineCount(mineCount)
 {
 	loadStyleSheets("resources/stylesheets/");
 
@@ -21,10 +26,11 @@ Board::Board(int rows, int columns, int tileSize, QWidget* parent)
 		for (int j = 0; j < m_columns; j++)
 		{
 			int id = i * m_rows + j;
-			Tile* tile = new Tile(id, m_tileSize, m_styleSheets, this);
-			m_tiles.push_back(tile);
+			std::unique_ptr<Tile> tile = std::make_unique<Tile>(id, m_tileSize, m_styleSheets, this);
+			tile->connect(tile.get(), &Tile::clicked, this, [this, id]() { activateMines(id); });
+			m_tiles.push_back(std::move(tile));
 
-			layout->addWidget(tile, i, j);
+			layout->addWidget(m_tiles[id].get(), i, j);
 		}
 	}
 
@@ -37,6 +43,7 @@ Board::Board(int rows, int columns, int tileSize, QWidget* parent)
 
 Board::~Board()
 {
+	m_tiles.clear();
 }
 
 void Board::loadStyleSheets(const std::string& dirPath)
@@ -51,5 +58,36 @@ void Board::loadStyleSheets(const std::string& dirPath)
 		stream[i] << infile.rdbuf();
 		m_styleSheets[i] = stream[i].str();
 		infile.close();
+	}
+}
+
+void Board::activateMines(int activator)
+{
+	m_tiles[activator]->uncover();
+
+	std::set<int> setMines;
+	Random r;
+
+	while (setMines.size() < m_mineCount)
+	{
+		int max = (m_rows * m_columns) - 1;
+		int mine = r.randInt(0, max);
+		
+		if (mine == activator)
+		{
+			continue;
+		}
+
+		if (setMines.find(mine) == setMines.end())
+		{
+			m_tiles[mine]->placeMine();
+			setMines.insert(mine);
+		}
+	}
+	
+	for (std::unique_ptr<Tile>& tile : m_tiles)
+	{
+		tile->disconnect(tile.get(), &Tile::clicked, nullptr, nullptr);
+		tile->connect(tile.get(), &Tile::clicked, tile.get(), &Tile::activate);
 	}
 }

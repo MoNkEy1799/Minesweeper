@@ -3,20 +3,18 @@
 #include <QSize>
 
 #include <array>
+#include <string>
 
 #include "Tile.h"
-
-bool Tile::m_firstMove = true;
 
 Tile::Tile(int id, int size, const std::array<std::string, 3>& styleSheets, QWidget* parent)
 	: QPushButton(parent),
 	m_id(id), m_count(0), m_size(size), m_mine(false),
 	m_state(TileState::COVERED), m_styles(styleSheets)
 {
-	std::vector<std::string> replace{ std::to_string(int(m_size / 10.0)) };
-	setStyleSheet(stringFormat(styleSheets[(int)m_state], replace).c_str());
+	std::vector<std::string> replace{ std::to_string(std::round(m_size / 10.0)) };
+	setStyleSheet(stringFormat(m_styles[(int)m_state], replace).c_str());
 
-	QPushButton::connect(this, &QPushButton::clicked, this, &Tile::uncover);
 	setFixedSize(size, size);
 }
 
@@ -24,32 +22,43 @@ Tile::~Tile()
 {
 }
 
-void Tile::uncover()
+void Tile::placeMine()
 {
-	if (m_firstMove)
-	{
-		m_firstMove = false;
-	}
+	m_mine = true;
+}
 
+void Tile::activate()
+{
 	if (m_state == TileState::COVERED)
 	{
 		m_state = TileState::UNCOVERED;
-		setStyleSheet((m_styles[(int)m_state]).c_str());
+		uncover();
 	}
 }
 
-std::string stringFormat(std::string input, std::vector<std::string>& replace)
+void Tile::uncover()
 {
-	size_t position = 0;
+	std::vector<std::string> replace{ std::to_string(std::round(m_size / 10.0)) };
+	setStyleSheet(stringFormat(m_styles[(int)m_state], replace).c_str());
 
+	if (m_mine)
+	{
+		setText("M");
+		setStyleSheet("color: red");
+	}
+}
+
+std::string Tile::stringFormat(std::string input, std::vector<std::string>& replace)
+{
 	for (int i = 0; i < replace.size(); i++)
 	{
+		size_t position = 0;
+
 		std::string find = "{" + std::to_string(i) + "}";
 		while ((position = input.find(find, position)) != std::string::npos)
 		{
 			input.replace(position, find.length(), replace[i]);
 		}
 	}
-
 	return input;
 }

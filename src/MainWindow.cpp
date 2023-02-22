@@ -4,13 +4,15 @@
 #include <QGridlayout>
 #include <QPushButton>
 
+#include <string>
+
 #include "MainWindow.h"
 #include "Board.h"
 
 MainWindow::MainWindow(QWidget* parent)
 	: QMainWindow(parent)
 {
-	Board* board = new Board(10, 10, 20, this);
+	Board* board = new Board(10, 10, 20, 20, this);
 
 	m_mainWidget = new QWidget(this);
 

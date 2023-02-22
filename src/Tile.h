@@ -14,6 +14,8 @@ public:
 	Tile(int id, int size, const std::array<std::string, 3>& styleSheets, QWidget* partent = nullptr);
 	~Tile();
 
+	void placeMine();
+	void activate();
 	void uncover();
 	void checkNeighbours();
 
@@ -21,7 +23,6 @@ private:
 	int m_id, m_count, m_size;
 	std::vector<Tile*> m_neighbours;
 	bool m_mine;
-	static bool m_firstMove;
 	TileState m_state;
 	const std::array<std::string, 3>& m_styles;
 
