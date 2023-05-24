@@ -6,6 +6,8 @@
 #include <iostream>
 #include <QGridLayout>
 
+class Board;
+
 class MainWindow : public QMainWindow
 {
 public: 
@@ -15,4 +17,8 @@ public:
 private:
 	QWidget* m_mainWidget;
 	QGridLayout* m_layout;
+	QPushButton* m_restart;
+	Board* m_board;
+
+	void restartGame();
 };

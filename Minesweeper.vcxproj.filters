@@ -54,5 +54,6 @@
     <Text Include="resources\stylesheets\covered.txt" />
     <Text Include="resources\stylesheets\uncovered.txt" />
     <Text Include="resources\stylesheets\flagged.txt" />
+    <Text Include="resources\stylesheets\mined.txt" />
   </ItemGroup>
 </Project>

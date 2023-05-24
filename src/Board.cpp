@@ -6,11 +6,11 @@
 #include <sstream>
 #include <vector>
 #include <memory>
-#include <cstdlib>
 #include <set>
 #include <iostream>
 
 #include "Board.h"
+#include "Tile.h"
 #include "Random.h"
 
 Board::Board(int rows, int columns, int mineCount, int tileSize, QWidget* parent)
@@ -26,11 +26,20 @@ Board::Board(int rows, int columns, int mineCount, int tileSize, QWidget* parent
 		for (int j = 0; j < m_columns; j++)
 		{
 			int id = i * m_rows + j;
-			std::unique_ptr<Tile> tile = std::make_unique<Tile>(id, m_tileSize, m_styleSheets, this);
+			std::unique_ptr<Tile> tile = std::make_unique<Tile>(id, m_tileSize, m_styleSheets, this, this);
 			tile->connect(tile.get(), &Tile::clicked, this, [this, id]() { activateMines(id); });
 			m_tiles.push_back(std::move(tile));
 
 			layout->addWidget(m_tiles[id].get(), i, j);
+		}
+	}
+
+	for (int i = 0; i < m_rows * m_columns; i++)
+	{
+		std::vector<int> neighbours = calculateNeighbours(i);
+		for (int n : neighbours)
+		{
+			m_tiles[i]->addNeighbour(m_tiles[n].get());
 		}
 	}
 
@@ -46,13 +55,21 @@ Board::~Board()
 	m_tiles.clear();
 }
 
+void Board::gameOver(int id)
+{
+	for (std::unique_ptr<Tile>& tile : m_tiles)
+	{
+		tile->endGame(id);
+	}
+}
+
 void Board::loadStyleSheets(const std::string& dirPath)
 {
 	std::ifstream infile;
-	std::stringstream stream[3];
-	std::string files[3] = { "covered.txt", "uncovered.txt", "flagged.txt" };
+	std::stringstream stream[4];
+	std::string files[4] = { "covered.txt", "uncovered.txt", "flagged.txt", "mined.txt" };
 
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < 4; i++)
 	{
 		infile.open(dirPath + files[i]);
 		stream[i] << infile.rdbuf();
@@ -63,8 +80,6 @@ void Board::loadStyleSheets(const std::string& dirPath)
 
 void Board::activateMines(int activator)
 {
-	m_tiles[activator]->uncover();
-
 	std::set<int> setMines;
 	Random r;
 
@@ -89,5 +104,93 @@ void Board::activateMines(int activator)
 	{
 		tile->disconnect(tile.get(), &Tile::clicked, nullptr, nullptr);
 		tile->connect(tile.get(), &Tile::clicked, tile.get(), &Tile::activate);
+		tile->checkMinedNeighbours();
 	}
+
+	m_tiles[activator]->activate();
+}
+
+std::vector<int> Board::calculateNeighbours(int id)
+{
+	std::vector<int> neighbours;
+	int x = id % m_columns;
+	int y = id / m_rows;
+
+	if (x == 0 and y == 0)
+	{
+		neighbours.push_back(id + 1);
+		neighbours.push_back(id + m_columns);
+		neighbours.push_back(id + m_columns + 1);
+	}
+
+	else if (x == m_columns - 1 and y == 0)
+	{
+		neighbours.push_back(id - 1);
+		neighbours.push_back(id + m_columns - 1);
+		neighbours.push_back(id + m_columns);
+	}
+
+	else if (x == 0 and y == m_rows - 1)
+	{
+		neighbours.push_back(id - m_columns);
+		neighbours.push_back(id - m_columns + 1);
+		neighbours.push_back(id + 1);
+	}
+
+	else if (x == m_columns - 1 and y == m_rows - 1)
+	{
+		neighbours.push_back(id - 1);
+		neighbours.push_back(id - m_columns - 1);
+		neighbours.push_back(id - m_columns);
+	}
+
+	else if (y == 0)
+	{
+		neighbours.push_back(id - 1);
+		neighbours.push_back(id + 1);
+		neighbours.push_back(id + m_columns - 1);
+		neighbours.push_back(id + m_columns);
+		neighbours.push_back(id + m_columns + 1);
+	}
+
+	else if (y == m_rows - 1)
+	{
+		neighbours.push_back(id - 1);
+		neighbours.push_back(id + 1);
+		neighbours.push_back(id - m_columns - 1);
+		neighbours.push_back(id - m_columns);
+		neighbours.push_back(id - m_columns + 1);
+	}
+
+	else if (x == 0)
+	{
+		neighbours.push_back(id - m_columns);
+		neighbours.push_back(id - m_columns + 1);
+		neighbours.push_back(id + 1);
+		neighbours.push_back(id + m_columns);
+		neighbours.push_back(id + m_columns + 1);
+	}
+
+	else if (x == m_columns - 1)
+	{
+		neighbours.push_back(id - m_columns);
+		neighbours.push_back(id - m_columns - 1);
+		neighbours.push_back(id - 1);
+		neighbours.push_back(id + m_columns);
+		neighbours.push_back(id + m_columns - 1);
+	}
+
+	else
+	{
+		neighbours.push_back(id - m_columns - 1);
+		neighbours.push_back(id - m_columns);
+		neighbours.push_back(id - m_columns + 1);
+		neighbours.push_back(id - 1);
+		neighbours.push_back(id + 1);
+		neighbours.push_back(id + m_columns - 1);
+		neighbours.push_back(id + m_columns);
+		neighbours.push_back(id + m_columns + 1);
+	}
+
+	return neighbours;
 }
