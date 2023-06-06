@@ -13,12 +13,37 @@
 #include "Tile.h"
 #include "Random.h"
 
-Board::Board(int rows, int columns, int mineCount, int tileSize, QWidget* parent)
-	: QWidget(parent),
+const std::string StyleSheet::COVERED =
+	"QPushButton{"
+		"background: #c0c0c0;"
+		"border-top: 2px solid #ffffff;"
+		"border-left: 2px solid #ffffff;"
+		"border-bottom: 2px solid #808080;"
+		"border-right: 2px solid #808080;}"
+
+	"QPushButton:hover{"
+		"background: #c0c0c0;}";
+
+const std::string StyleSheet::UNCOVERED =
+	"QPushButton{"
+		"background: #c0c0c0;"
+		"border: 1px solid #808080;}"
+
+	"QPushButton:hover{"
+		"background: #c0c0c0;}";
+
+const std::string StyleSheet::MINED =
+	"QPushButton{"
+		"background: #ff0000;"
+		"border: 1px solid #808080;}"
+
+	"QPushButton:hover{"
+		"background: #ff0000;}";
+
+Board::Board(int rows, int columns, int mineCount, int tileSize, QWidget* parent, MainWindow* main)
+	: QWidget(parent), m_mainWindow(main),
 	m_rows(rows), m_columns(columns), m_tileSize(tileSize), m_mineCount(mineCount)
 {
-	loadStyleSheets("resources/stylesheets/");
-
 	QGridLayout* layout = new QGridLayout(this);
 
 	for (int i = 0; i < m_rows; i++)
@@ -26,11 +51,11 @@ Board::Board(int rows, int columns, int mineCount, int tileSize, QWidget* parent
 		for (int j = 0; j < m_columns; j++)
 		{
 			int id = i * m_rows + j;
-			std::unique_ptr<Tile> tile = std::make_unique<Tile>(id, m_tileSize, m_styleSheets, this, this);
-			tile->connect(tile.get(), &Tile::clicked, this, [this, id]() { activateMines(id); });
-			m_tiles.push_back(std::move(tile));
+			Tile* tile = new Tile(id, m_tileSize, this, this);
+			connect(tile, &QPushButton::clicked, this, [this, id]() { activateMines(id); });
+			m_tiles.push_back(tile);
 
-			layout->addWidget(m_tiles[id].get(), i, j);
+			layout->addWidget(m_tiles[id], i, j);
 		}
 	}
 
@@ -39,7 +64,7 @@ Board::Board(int rows, int columns, int mineCount, int tileSize, QWidget* parent
 		std::vector<int> neighbours = calculateNeighbours(i);
 		for (int n : neighbours)
 		{
-			m_tiles[i]->addNeighbour(m_tiles[n].get());
+			m_tiles[i]->addNeighbour(m_tiles[n]);
 		}
 	}
 
@@ -57,24 +82,9 @@ Board::~Board()
 
 void Board::gameOver(int id)
 {
-	for (std::unique_ptr<Tile>& tile : m_tiles)
+	for (Tile* tile : m_tiles)
 	{
 		tile->endGame(id);
-	}
-}
-
-void Board::loadStyleSheets(const std::string& dirPath)
-{
-	std::ifstream infile;
-	std::stringstream stream[4];
-	std::string files[4] = { "covered.txt", "uncovered.txt", "flagged.txt", "mined.txt" };
-
-	for (int i = 0; i < 4; i++)
-	{
-		infile.open(dirPath + files[i]);
-		stream[i] << infile.rdbuf();
-		m_styleSheets[i] = stream[i].str();
-		infile.close();
 	}
 }
 
@@ -100,10 +110,10 @@ void Board::activateMines(int activator)
 		}
 	}
 	
-	for (std::unique_ptr<Tile>& tile : m_tiles)
+	for (Tile* tile : m_tiles)
 	{
-		tile->disconnect(tile.get(), &Tile::clicked, nullptr, nullptr);
-		tile->connect(tile.get(), &Tile::clicked, tile.get(), &Tile::activate);
+		disconnect(tile, &QPushButton::clicked, nullptr, nullptr);
+		connect(tile, &QPushButton::clicked, tile, &Tile::activate);
 		tile->checkMinedNeighbours();
 	}
 

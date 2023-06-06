@@ -7,21 +7,17 @@
 
 #include <array>
 #include <string>
+#include <iostream>
 
 #include "Tile.h"
 #include "Board.h"
 
-Tile::Tile(int id, int size, const std::array<std::string, 4>& styleSheets, QWidget* parent, Board* board)
+Tile::Tile(int id, int size, QWidget* parent, Board* board)
 	: QPushButton(parent),
 	m_id(id), m_count(0), m_size(size), m_mine(false), m_board(board),
-	m_state(TileState::COVERED), m_currentButton(MouseButton::LEFT), m_styles(styleSheets)
+	m_state(TileState::COVERED), m_currentButton(MouseButton::LEFT)
 {
-	std::vector<std::string> replace{ "#c0c0c0", borderSize()};
-	setStyleSheet(stringFormat(m_styles[(int)m_state], replace).c_str());
-	QFont font("Sans-Serif", 10);
-	font.setBold(true);
-	setFont(font);
-
+	setStyleSheet(StyleSheet::COVERED.c_str());
 	setFixedSize(size, size);
 }
 
@@ -77,31 +73,33 @@ void Tile::activate()
 		if (m_state == TileState::COVERED)
 		{
 			m_state = TileState::FLAGGED;
-			setText("\u2691");
+			setIcon(QIcon("resources/tiles/flag.png"));
+			setIconSize(QSize(m_size, m_size));
 		}
 
 		else
 		{
 			m_state = TileState::COVERED;
-			setText("");
+			setIcon(QIcon());
 		}
 	}
 }
 
-void Tile::uncover(bool gameOver)
+void Tile::uncover()
 {
 	if (m_mine)
 	{
-		setText("\u24c2");
-		std::vector<std::string> replace{ "#ff0000" };
-		setStyleSheet(stringFormat(m_styles[3], replace).c_str());
+		setIcon(QIcon("resources/tiles/mine.png"));
+		setIconSize(QSize(m_size, m_size));
+		setStyleSheet(StyleSheet::MINED.c_str());
 		m_board->gameOver(m_id);
 		return;
 	}
 
-	setText(std::format("{}", m_count).c_str());
-	std::vector<std::string> replace{ color() };
-	setStyleSheet(stringFormat(m_styles[(int)m_state], replace).c_str());
+
+	setIcon(QIcon(countToFilepath()));
+	setIconSize(QSize(m_size, m_size));
+	setStyleSheet(StyleSheet::UNCOVERED.c_str());
 
 	if (m_count == 0)
 	{
@@ -147,75 +145,21 @@ void Tile::changeButton(MouseButton button)
 
 void Tile::endGame(int id)
 {
-	disconnect(this, &Tile::clicked, nullptr, nullptr);
+	disconnect(this, &QPushButton::clicked, nullptr, nullptr);
 
 	if (m_mine and m_id != id and m_state != TileState::FLAGGED)
 	{
-		setText("\u24c2");
-		std::vector<std::string> replace{ "#c0c0c0" };
-		setStyleSheet(stringFormat(m_styles[0], replace).c_str());
+		setIcon(QIcon("resources/tiles/mine.png"));
+		setIconSize(QSize(m_size, m_size));
+		setStyleSheet(StyleSheet::UNCOVERED.c_str());
 	}
 
 	else if (not m_mine and m_state == TileState::FLAGGED)
 	{
-		std::vector<std::string> replace{ "#ffa0a0", borderSize() };
-		setStyleSheet(stringFormat(m_styles[0], replace).c_str());
+		setIcon(QIcon("resources/tiles/wrong.png"));
+		setIconSize(QSize(m_size, m_size));
+		setStyleSheet(StyleSheet::UNCOVERED.c_str());
 	}
-}
-
-std::string Tile::stringFormat(std::string input, std::vector<std::string>& replace)
-{
-	for (int i = 0; i < replace.size(); i++)
-	{
-		size_t position = 0;
-
-		std::string find = "{" + std::to_string(i) + "}";
-		while ((position = input.find(find, position)) != std::string::npos)
-		{
-			input.replace(position, find.length(), replace[i]);
-		}
-	}
-	return input;
-}
-
-std::string Tile::borderSize()
-{
-	return std::to_string(std::round(m_size / 10.0));
-}
-
-std::string Tile::color()
-{
-	switch (m_count)
-	{
-	case 0:
-		return "#c0c0c0";
-
-	case 1:
-		return "#0001fd";
-
-	case 2:
-		return "#017e00";
-
-	case 3:
-		return "#fe0000";
-
-	case 4:
-		return "#010180";
-
-	case 5:
-		return "#810101";
-
-	case 6:
-		return "#008080";
-
-	case 7:
-		return "#000000";
-
-	case 8:
-		return "#808080";
-	}
-
-	return "#c0c0c0";
 }
 
 void Tile::mouseReleaseEvent(QMouseEvent* event)
@@ -231,6 +175,32 @@ void Tile::mouseReleaseEvent(QMouseEvent* event)
 	}
 
 	emit QPushButton::clicked();
+}
+
+QString Tile::countToFilepath()
+{
+	std::string path = "resources/tiles/";
+	switch (m_count)
+	{
+	case 1:
+		return QString((path + "one.png").c_str());
+	case 2:
+		return QString((path + "two.png").c_str());
+	case 3:
+		return QString((path + "three.png").c_str());
+	case 4:
+		return QString((path + "four.png").c_str());
+	case 5:
+		return QString((path + "five.png").c_str());
+	case 6:
+		return QString((path + "six.png").c_str());
+	case 7:
+		return QString((path + "seven.png").c_str());
+	case 8:
+		return QString((path + "eight.png").c_str());
+	}
+	// For m_count == 0, the QIcon load will silently fail. This is probably not nice but I don't care.
+	return QString();
 }
 
 void Tile::propagate()

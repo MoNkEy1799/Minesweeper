@@ -7,24 +7,21 @@
 #include <string>
 
 #include "MainWindow.h"
+#include "HeaderWidget.h"
 #include "Board.h"
 
 MainWindow::MainWindow(QWidget* parent)
-	: QMainWindow(parent)
+	: QMainWindow(parent), m_board(nullptr), m_mainWidget(nullptr), m_header(nullptr), m_layout(nullptr)
 {
 	Board* board = new Board(8, 8, 10, 20, this);
 
 	m_mainWidget = new QWidget(this);
-	m_restart = new QPushButton(this);
-	
-	m_restart->setFixedSize(40, 40);
-	connect(m_restart, &QPushButton::clicked, this, &MainWindow::restartGame);
+	m_header = new Header(8*20, this, this);
 
 	m_layout = new QGridLayout();
-
 	m_layout->setSpacing(0);
-	m_layout->addWidget(m_restart);
-	m_layout->addWidget(board);
+	m_layout->addWidget(m_header, 0, 0, Qt::AlignCenter);
+	m_layout->addWidget(board, 1, 0);
 	m_mainWidget->setLayout(m_layout);
 
 	setCentralWidget(m_mainWidget);

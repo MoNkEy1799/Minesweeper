@@ -7,6 +7,7 @@
 #include <QGridLayout>
 
 class Board;
+class Header;
 
 class MainWindow : public QMainWindow
 {
@@ -14,11 +15,12 @@ public:
 	MainWindow(QWidget* partent = nullptr);
 	~MainWindow();
 
+	void restartGame();
+
 private:
 	QWidget* m_mainWidget;
 	QGridLayout* m_layout;
-	QPushButton* m_restart;
+	Header* m_header;
 	Board* m_board;
 
-	void restartGame();
 };

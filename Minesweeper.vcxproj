@@ -78,7 +78,7 @@
       <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
@@ -96,21 +96,66 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Board.cpp" />
+    <ClCompile Include="src\HeaderWidget.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\MainWindow.cpp" />
     <ClCompile Include="src\Tile.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Board.h" />
+    <ClInclude Include="src\HeaderWidget.h" />
     <ClInclude Include="src\MainWindow.h" />
     <ClInclude Include="src\Random.h" />
     <ClInclude Include="src\Tile.h" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="resources\stylesheets\covered.txt" />
-    <Text Include="resources\stylesheets\flagged.txt" />
-    <Text Include="resources\stylesheets\mined.txt" />
-    <Text Include="resources\stylesheets\uncovered.txt" />
+    <Image Include="resources\images\tiles\eight.png" />
+    <Image Include="resources\images\tiles\five.png" />
+    <Image Include="resources\images\tiles\flag.png" />
+    <Image Include="resources\images\tiles\four.png" />
+    <Image Include="resources\images\tiles\lose.png" />
+    <Image Include="resources\images\tiles\mine.png" />
+    <Image Include="resources\images\tiles\one.png" />
+    <Image Include="resources\images\tiles\seven.png" />
+    <Image Include="resources\images\tiles\six.png" />
+    <Image Include="resources\images\tiles\smiley.png" />
+    <Image Include="resources\images\tiles\three.png" />
+    <Image Include="resources\images\tiles\two.png" />
+    <Image Include="resources\images\tiles\win.png" />
+    <Image Include="resources\images\timer\t_0.png" />
+    <Image Include="resources\images\timer\t_1.png" />
+    <Image Include="resources\images\timer\t_2.png" />
+    <Image Include="resources\images\timer\t_3.png" />
+    <Image Include="resources\images\timer\t_4.png" />
+    <Image Include="resources\images\timer\t_5.png" />
+    <Image Include="resources\images\timer\t_6.png" />
+    <Image Include="resources\images\timer\t_7.png" />
+    <Image Include="resources\images\timer\t_8.png" />
+    <Image Include="resources\images\timer\t_9.png" />
+    <Image Include="resources\tiles\eight.png" />
+    <Image Include="resources\tiles\five.png" />
+    <Image Include="resources\tiles\flag.png" />
+    <Image Include="resources\tiles\four.png" />
+    <Image Include="resources\tiles\lose.png" />
+    <Image Include="resources\tiles\mine.png" />
+    <Image Include="resources\tiles\one.png" />
+    <Image Include="resources\tiles\seven.png" />
+    <Image Include="resources\tiles\six.png" />
+    <Image Include="resources\tiles\smiley.png" />
+    <Image Include="resources\tiles\three.png" />
+    <Image Include="resources\tiles\two.png" />
+    <Image Include="resources\tiles\win.png" />
+    <Image Include="resources\tiles\wrong.png" />
+    <Image Include="resources\timer\t_0.png" />
+    <Image Include="resources\timer\t_1.png" />
+    <Image Include="resources\timer\t_2.png" />
+    <Image Include="resources\timer\t_3.png" />
+    <Image Include="resources\timer\t_4.png" />
+    <Image Include="resources\timer\t_5.png" />
+    <Image Include="resources\timer\t_6.png" />
+    <Image Include="resources\timer\t_7.png" />
+    <Image Include="resources\timer\t_8.png" />
+    <Image Include="resources\timer\t_9.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
