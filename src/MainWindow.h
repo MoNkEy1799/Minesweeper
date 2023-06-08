@@ -13,14 +13,14 @@ class MainWindow : public QMainWindow
 {
 public: 
 	MainWindow(QWidget* partent = nullptr);
-	~MainWindow();
 
 	void restartGame();
+
+	Board* board;
+	Header* header;
 
 private:
 	QWidget* m_mainWidget;
 	QGridLayout* m_layout;
-	Header* m_header;
-	Board* m_board;
-
+	int m_rowSetting, m_colSetting, m_mineSetting;
 };
