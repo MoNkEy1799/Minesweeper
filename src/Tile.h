@@ -6,10 +6,10 @@
 #include <string>
 #include <vector>
 #include <array>
-#include <unordered_map>
 
 enum class TileState { COVERED, UNCOVERED, FLAGGED };
 enum class MouseButton{ NONE, LEFT, RIGHT };
+enum Icons { FLAG = 9, MINE = 10, WRONG = 11 };
 
 class Board;
 
@@ -38,7 +38,7 @@ private:
 	bool m_mine;
 	TileState m_state;
 	Board* m_board;
-	static std::unordered_map<std::string, QIcon*> m_icons;
+	static std::array<QIcon, 12> m_icons;
 
 	void propagate();
 

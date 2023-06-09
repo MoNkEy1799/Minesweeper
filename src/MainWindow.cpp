@@ -3,6 +3,7 @@
 #include <QWidget>
 #include <QGridlayout>
 #include <QPushButton>
+#include <QMenu>
 
 #include <string>
 
@@ -12,11 +13,14 @@
 
 MainWindow::MainWindow(QWidget* parent)
 	: QMainWindow(parent), board(nullptr), m_mainWidget(nullptr), header(nullptr), m_layout(nullptr),
-	m_rowSetting(5), m_colSetting(5), m_mineSetting(1)
+	m_rowSetting(20), m_colSetting(20), m_mineSetting(10)
 {
 	header = new Header(m_colSetting * 20 + 4, this, this);
 	header->changeMineCount(m_mineSetting);
 	board = new Board(m_rowSetting, m_colSetting, m_mineSetting, 20, this, this);
+
+	QMenu* menu = new QMenu(this);
+	menu->addAction(new QAction("test", this));
 
 	m_layout = new QGridLayout();
 	m_layout->addWidget(header, 0, 0, Qt::AlignCenter);

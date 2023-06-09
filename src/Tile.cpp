@@ -7,8 +7,6 @@
 
 #include <array>
 #include <string>
-#include <iostream>
-#include <unordered_map>
 
 #include "Tile.h"
 #include "Board.h"
@@ -16,6 +14,7 @@
 #include "HeaderWidget.h"
 
 MouseButton Tile::currentButton = MouseButton::NONE;
+std::array<QIcon, 12> Tile::m_icons;
 
 Tile::Tile(int id, int size, QWidget* parent, Board* board)
 	: QPushButton(parent),
@@ -73,7 +72,7 @@ void Tile::activate()
 		{
 			m_state = TileState::FLAGGED;
 			m_board->flagCount++;
-			setIcon(*m_icons["flag"]);
+			setIcon(m_icons[Icons::FLAG]);
 			setIconSize(QSize(m_size, m_size));
 			m_board->mainWindow->header->changeMineCount(m_board->mineCount - m_board->flagCount);
 		}
@@ -91,18 +90,15 @@ void Tile::uncover()
 {
 	if (m_mine)
 	{
-		setIcon(*m_icons["mine"]);
+		setIcon(m_icons[Icons::MINE]);
 		setIconSize(QSize(m_size, m_size));
 		setStyleSheet(StyleSheet::MINED.c_str());
 		m_board->gameOver(m_id);
 		return;
 	}
 
-	if (m_count != 0)
-	{
-		setIcon(*m_icons[std::to_string(m_count)]);
-		setIconSize(QSize(m_size, m_size));
-	}
+	setIcon(m_icons[m_count]);
+	setIconSize(QSize(m_size, m_size));
 	setStyleSheet(StyleSheet::UNCOVERED.c_str());
 
 	if (m_board->checkForWin())
@@ -154,14 +150,14 @@ void Tile::endGame(int id)
 {
 	if (m_mine and m_id != id and m_state != TileState::FLAGGED)
 	{
-		setIcon(*m_icons["mine"]);
+		setIcon(m_icons[Icons::MINE]);
 		setIconSize(QSize(m_size, m_size));
 		setStyleSheet(StyleSheet::UNCOVERED.c_str());
 	}
 
 	else if (not m_mine and m_state == TileState::FLAGGED)
 	{
-		setIcon(*m_icons["wrong"]);
+		setIcon(m_icons[Icons::WRONG]);
 		setIconSize(QSize(m_size, m_size));
 		setStyleSheet(StyleSheet::UNCOVERED.c_str());
 	}
@@ -169,18 +165,21 @@ void Tile::endGame(int id)
 
 void Tile::loadIcons()
 {
-	Tile::m_icons["flag"] = new QIcon("resources/tiles/flag.png");
-	Tile::m_icons["mine"] = new QIcon("resources/tiles/mine.png");
-	Tile::m_icons["wrong"] = new QIcon("resources/tiles/wrong.png");
-	Tile::m_icons["1"] = new QIcon("resources/tiles/one.png");
-	Tile::m_icons["2"] = new QIcon("resources/tiles/two.png");
-	Tile::m_icons["3"] = new QIcon("resources/tiles/three.png");
-	Tile::m_icons["4"] = new QIcon("resources/tiles/four.png");
-	Tile::m_icons["5"] = new QIcon("resources/tiles/five.png");
-	Tile::m_icons["6"] = new QIcon("resources/tiles/six.png");
-	Tile::m_icons["7"] = new QIcon("resources/tiles/seven.png");
-	Tile::m_icons["8"] = new QIcon("resources/tiles/eight.png");
-	Tile::m_icons["9"] = new QIcon("resources/tiles/nine.png");
+	Tile::m_icons =
+	{
+		QIcon(),
+		QIcon("resources/tiles/one.png"),
+		QIcon("resources/tiles/two.png"),
+		QIcon("resources/tiles/three.png"),
+		QIcon("resources/tiles/four.png"),
+		QIcon("resources/tiles/five.png"),
+		QIcon("resources/tiles/six.png"),
+		QIcon("resources/tiles/seven.png"),
+		QIcon("resources/tiles/eight.png"),
+		QIcon("resources/tiles/flag.png"),
+		QIcon("resources/tiles/mine.png"),
+		QIcon("resources/tiles/wrong.png")
+	};
 }
 
 void Tile::mouseReleaseEvent(QMouseEvent* event)
