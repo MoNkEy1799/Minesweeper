@@ -1,5 +1,6 @@
 #include <QGridLayout>
-#include <QMetaObject>
+#include <QPushButton>
+#include <QIcon>
 
 #include <string>
 #include <fstream>
@@ -61,6 +62,7 @@ Board::Board(int rows, int columns, int mineCount, int tileSize, QWidget* parent
 	: QWidget(parent), mainWindow(main), flagCount(0),
 	m_rows(rows), m_columns(columns), m_tileSize(tileSize), mineCount(mineCount)
 {
+	Tile::loadIcons();
 	QGridLayout* layout = new QGridLayout(this);
 
 	for (int i = 0; i < m_rows; i++)

@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <array>
+#include <unordered_map>
 
 enum class TileState { COVERED, UNCOVERED, FLAGGED };
 enum class MouseButton{ NONE, LEFT, RIGHT };
@@ -29,6 +30,7 @@ public:
 	void endGame(int id);
 
 	static MouseButton currentButton;
+	static void loadIcons();
 
 private:
 	int m_id, m_count, m_size;
@@ -36,8 +38,8 @@ private:
 	bool m_mine;
 	TileState m_state;
 	Board* m_board;
+	static std::unordered_map<std::string, QIcon*> m_icons;
 
-	QString countToFilepath();
 	void propagate();
 
 protected:

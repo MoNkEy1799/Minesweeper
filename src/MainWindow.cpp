@@ -12,7 +12,7 @@
 
 MainWindow::MainWindow(QWidget* parent)
 	: QMainWindow(parent), board(nullptr), m_mainWidget(nullptr), header(nullptr), m_layout(nullptr),
-	m_rowSetting(24), m_colSetting(30), m_mineSetting(10)
+	m_rowSetting(5), m_colSetting(5), m_mineSetting(1)
 {
 	header = new Header(m_colSetting * 20 + 4, this, this);
 	header->changeMineCount(m_mineSetting);

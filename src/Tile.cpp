@@ -8,6 +8,7 @@
 #include <array>
 #include <string>
 #include <iostream>
+#include <unordered_map>
 
 #include "Tile.h"
 #include "Board.h"
@@ -72,7 +73,7 @@ void Tile::activate()
 		{
 			m_state = TileState::FLAGGED;
 			m_board->flagCount++;
-			setIcon(QIcon("resources/tiles/flag.png"));
+			setIcon(*m_icons["flag"]);
 			setIconSize(QSize(m_size, m_size));
 			m_board->mainWindow->header->changeMineCount(m_board->mineCount - m_board->flagCount);
 		}
@@ -90,15 +91,18 @@ void Tile::uncover()
 {
 	if (m_mine)
 	{
-		setIcon(QIcon("resources/tiles/mine.png"));
+		setIcon(*m_icons["mine"]);
 		setIconSize(QSize(m_size, m_size));
 		setStyleSheet(StyleSheet::MINED.c_str());
 		m_board->gameOver(m_id);
 		return;
 	}
 
-	setIcon(QIcon(countToFilepath()));
-	setIconSize(QSize(m_size, m_size));
+	if (m_count != 0)
+	{
+		setIcon(*m_icons[std::to_string(m_count)]);
+		setIconSize(QSize(m_size, m_size));
+	}
 	setStyleSheet(StyleSheet::UNCOVERED.c_str());
 
 	if (m_board->checkForWin())
@@ -150,17 +154,33 @@ void Tile::endGame(int id)
 {
 	if (m_mine and m_id != id and m_state != TileState::FLAGGED)
 	{
-		setIcon(QIcon("resources/tiles/mine.png"));
+		setIcon(*m_icons["mine"]);
 		setIconSize(QSize(m_size, m_size));
 		setStyleSheet(StyleSheet::UNCOVERED.c_str());
 	}
 
 	else if (not m_mine and m_state == TileState::FLAGGED)
 	{
-		setIcon(QIcon("resources/tiles/wrong.png"));
+		setIcon(*m_icons["wrong"]);
 		setIconSize(QSize(m_size, m_size));
 		setStyleSheet(StyleSheet::UNCOVERED.c_str());
 	}
+}
+
+void Tile::loadIcons()
+{
+	Tile::m_icons["flag"] = new QIcon("resources/tiles/flag.png");
+	Tile::m_icons["mine"] = new QIcon("resources/tiles/mine.png");
+	Tile::m_icons["wrong"] = new QIcon("resources/tiles/wrong.png");
+	Tile::m_icons["1"] = new QIcon("resources/tiles/one.png");
+	Tile::m_icons["2"] = new QIcon("resources/tiles/two.png");
+	Tile::m_icons["3"] = new QIcon("resources/tiles/three.png");
+	Tile::m_icons["4"] = new QIcon("resources/tiles/four.png");
+	Tile::m_icons["5"] = new QIcon("resources/tiles/five.png");
+	Tile::m_icons["6"] = new QIcon("resources/tiles/six.png");
+	Tile::m_icons["7"] = new QIcon("resources/tiles/seven.png");
+	Tile::m_icons["8"] = new QIcon("resources/tiles/eight.png");
+	Tile::m_icons["9"] = new QIcon("resources/tiles/nine.png");
 }
 
 void Tile::mouseReleaseEvent(QMouseEvent* event)
@@ -175,32 +195,6 @@ void Tile::mouseReleaseEvent(QMouseEvent* event)
 		emit QPushButton::clicked();
 	}
 	return QPushButton::mouseReleaseEvent(event);
-}
-
-QString Tile::countToFilepath()
-{
-	std::string path = "resources/tiles/";
-	switch (m_count)
-	{
-	case 1:
-		return QString((path + "one.png").c_str());
-	case 2:
-		return QString((path + "two.png").c_str());
-	case 3:
-		return QString((path + "three.png").c_str());
-	case 4:
-		return QString((path + "four.png").c_str());
-	case 5:
-		return QString((path + "five.png").c_str());
-	case 6:
-		return QString((path + "six.png").c_str());
-	case 7:
-		return QString((path + "seven.png").c_str());
-	case 8:
-		return QString((path + "eight.png").c_str());
-	}
-	// For m_count == 0, the QIcon load will silently fail. This is probably not nice but I don't care.
-	return QString();
 }
 
 void Tile::propagate()
