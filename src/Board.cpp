@@ -53,10 +53,37 @@ const std::string StyleSheet::HEADER =
 const std::string StyleSheet::OUTER =
 	"QWidget{"
 		"background: #c0c0c0;"
+		"font-weight: bold;"
 		"border-top: 2px solid #ffffff;"
 		"border-left: 2px solid #ffffff;"
 		"border-bottom: 2px solid #808080;"
-		"border-right: 2px solid #808080;}";
+		"border-right: 2px solid #808080;}"
+	
+	"QSpinBox{"
+		"background: #c0c0c0;"
+		"font-weight: bold;"
+		"border-top: 2px solid #808080;"
+		"border-left: 2px solid #808080;"
+		"border-bottom: 2px solid #ffffff;"
+		"border-right: 2px solid #ffffff;}"
+
+	"QLabel{"
+		"background: #c0c0c0;"
+		"font-weight: bold;"
+		"border-top: 2px solid #808080;"
+		"border-left: 2px solid #808080;"
+		"border-bottom: 2px solid #ffffff;"
+		"border-right: 2px solid #ffffff;}";
+
+const std::string StyleSheet::MENU =
+	"QMenuBar{"
+		"background: #c0c0c0;}"
+
+	"QMenuBar::item::selected{"
+		"background: #b0b0b0;;}"
+
+	"QMenu::item::selected{"
+		"background: #a0a0a0;}";
 
 Board::Board(int rows, int columns, int mineCount, int tileSize, QWidget* parent, MainWindow* main)
 	: QWidget(parent), mainWindow(main), flagCount(0),
@@ -137,6 +164,21 @@ void Board::gameOver(int id)
 		disconnect(tile, &QPushButton::clicked, nullptr, nullptr);
 		tile->endGame(id);
 	}
+}
+
+void Board::reset()
+{
+	for (int id = 0; id < m_tiles.size(); id++)
+	{
+		disconnect(m_tiles[id], &QPushButton::clicked, nullptr, nullptr);
+		connect(m_tiles[id], &QPushButton::clicked, this, [this, id]() { activateMines(id); });
+		m_tiles[id]->reset();
+	}
+}
+
+QSize Board::boardSize()
+{
+	return QSize(m_rows, m_columns);
 }
 
 void Board::activateMines(int activator)

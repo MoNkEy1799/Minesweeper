@@ -1,12 +1,11 @@
 #pragma once
 #include <QWidget>
-
 #include <vector>
 #include <memory>
 
 struct StyleSheet
 {
-	const static std::string COVERED, UNCOVERED, MINED, HEADER, OUTER;
+	const static std::string COVERED, UNCOVERED, MINED, HEADER, OUTER, MENU;
 };
 
 class Tile;
@@ -20,6 +19,8 @@ public:
 	bool checkForWin();
 	void gameWon();
 	void gameOver(int id);
+	void reset();
+	QSize boardSize();
 
 	MainWindow* mainWindow;
 	int flagCount, mineCount;

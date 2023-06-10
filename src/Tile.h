@@ -28,6 +28,7 @@ public:
 	int countFlaggedNeighbours();
 	void changeButton(MouseButton button);
 	void endGame(int id);
+	void reset();
 
 	static MouseButton currentButton;
 	static void loadIcons();

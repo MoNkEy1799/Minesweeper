@@ -163,6 +163,15 @@ void Tile::endGame(int id)
 	}
 }
 
+void Tile::reset()
+{
+	m_count = 0;
+	m_mine = false;
+	m_state = TileState::COVERED;
+	setStyleSheet(StyleSheet::COVERED.c_str());
+	setIcon(m_icons[0]);
+}
+
 void Tile::loadIcons()
 {
 	Tile::m_icons =

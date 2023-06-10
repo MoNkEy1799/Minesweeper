@@ -4,6 +4,8 @@
 #include <QPixmap>
 #include <QGridLayout>
 #include <QTimer>
+#include <QLabel>
+#include <Qt>
 
 #include <string>
 #include <iostream>
@@ -15,7 +17,7 @@
 Header::Header(int size, QWidget* parent, MainWindow* main)
 	: QWidget(parent), m_mainWindow(main), m_counter(this), m_timer(this), m_qtimer(nullptr), m_passedTime(-1)
 {
-	setFixedSize(size, 50);
+	setFixedSize(size, 46);
 	setStyleSheet(StyleSheet::HEADER.c_str());
 
 	m_qtimer = new QTimer(this);
@@ -23,15 +25,15 @@ Header::Header(int size, QWidget* parent, MainWindow* main)
 
 	m_restart = new QPushButton(this);
 	m_restart->setIcon(QIcon("resources/tiles/smiley.png"));
-	m_restart->setIconSize(QSize(25, 25));
+	m_restart->setIconSize(QSize(30, 30));
 	m_restart->setStyleSheet(StyleSheet::COVERED.c_str());
-	m_restart->setFixedSize(25, 25);
+	m_restart->setFixedSize(30, 30);
 	connect(m_restart, &QPushButton::clicked, main, &MainWindow::restartGame);
 
 	QGridLayout* layout = new QGridLayout(this);
-	layout->addWidget(&m_counter, 0, 0);
-	layout->addWidget(m_restart, 0, 1);
-	layout->addWidget(&m_timer, 0, 2);
+	layout->addWidget(&m_counter, 0, 0, Qt::AlignLeft);
+	layout->addWidget(m_restart, 0, 1, Qt::AlignCenter);
+	layout->addWidget(&m_timer, 0, 2, Qt::AlignRight);
 	setLayout(layout);
 }
 
@@ -101,7 +103,7 @@ Display::Display(QWidget* parent)
 	layout->setSpacing(0);
 	layout->setContentsMargins(0, 0, 0, 0);
 	setLayout(layout);
-	setFixedSize(39, 23);
+	setFixedSize(45, 24);
 
 	for (int digit = 0; digit < 3; digit++)
 	{
@@ -118,7 +120,7 @@ Display::Display(QWidget* parent)
 			{
 				label->setPixmap(QPixmap("resources/timer/minus.png"));
 			}
-			label->setFixedSize(13, 23);
+			label->setFixedSize(15, 24);
 			label->setAlignment(Qt::AlignCenter);
 			label->setStyleSheet(StyleSheet::HEADER.c_str());
 		}
