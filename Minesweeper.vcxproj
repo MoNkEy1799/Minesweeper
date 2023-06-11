@@ -157,6 +157,9 @@
     <Image Include="resources\timer\t_8.png" />
     <Image Include="resources\timer\t_9.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="saves\highscores.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
     <Import Project="$(QtMsBuild)\qt.targets" />

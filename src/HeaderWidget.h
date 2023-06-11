@@ -23,6 +23,29 @@ private:
 	void hideAll(int digit);
 };
 
+enum Difficulty { BEGINNER, INTERMEDIATE, EXPERT, STATS };
+
+struct Score
+{
+	uint16_t time = ~0;
+	int year = 0, month = 0, day = 0, hour = 0, minute = 0, second = 0;
+};
+
+class Highscores
+{
+public:
+	Highscores();
+	void addScore(Difficulty diff, uint16_t seconds);
+
+private:
+	std::unordered_map<Difficulty, std::array<Score, 10>> m_scoreData;
+	
+	void shiftData(Difficulty diff, int index);
+	void loadData();
+	void saveData();
+	Score newScore();
+};
+
 class Header : public QWidget
 {
 public:
@@ -37,29 +60,10 @@ public:
 private:
 	MainWindow* m_mainWindow;
 	Display m_timer, m_counter;
+	Highscores m_highscores;
 	QPushButton* m_restart;
 	QTimer* m_qtimer;
 	int m_passedTime;
 
 	void updateTime();
-};
-
-enum class Difficulty { BEGINNER, INTERMEDIATE, EXPERT };
-
-struct Score
-{
-	uint16_t time = ~0;
-	int year, month, day, hour, minute, second;
-};
-
-class Highscores
-{
-public:
-	Highscores();
-	void addScore(Difficulty diff, uint16_t seconds);
-
-private:
-	std::unordered_map<std::string, Score> data;
-	
-	bool loadData();
 };

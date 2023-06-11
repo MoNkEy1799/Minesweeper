@@ -9,13 +9,16 @@
 
 #include <string>
 #include <iostream>
+#include <fstream>
+#include <sstream>
+#include <chrono>
 
 #include "MainWindow.h"
 #include "HeaderWidget.h"
 #include "Board.h"
 
 Header::Header(int size, QWidget* parent, MainWindow* main)
-	: QWidget(parent), m_mainWindow(main), m_counter(this), m_timer(this), m_qtimer(nullptr), m_passedTime(-1)
+	: QWidget(parent), m_mainWindow(main), m_counter(this), m_timer(this), m_qtimer(nullptr), m_passedTime(-1), m_highscores()
 {
 	setFixedSize(size, 46);
 	setStyleSheet(StyleSheet::HEADER.c_str());
@@ -157,4 +160,162 @@ void Display::hideAll(int digit)
 	{
 		m_display[digit][number]->hide();
 	}
+}
+
+Highscores::Highscores()
+{
+	loadData();
+	addScore(Difficulty::BEGINNER, 2);
+	addScore(Difficulty::INTERMEDIATE, 200);
+	addScore(Difficulty::EXPERT, 4532);
+}
+
+void Highscores::addScore(Difficulty diff, uint16_t seconds)
+{
+	for (int i = 0; i < 10; i++)
+	{
+		if (seconds < m_scoreData[diff][i].time)
+		{
+			shiftData(diff, i);
+			Score s = newScore();
+			s.time = seconds;
+			m_scoreData[diff][i] = s;
+			break;
+		}
+	}
+	saveData();
+}
+
+void Highscores::shiftData(Difficulty diff, int index)
+{
+	for (int i = index; i < 9; i++)
+	{
+		m_scoreData[diff][i] = m_scoreData[diff][i + 1];
+	}
+}
+
+void Highscores::loadData()
+{
+	std::array<std::stringstream, 4> filedata;
+	std::ifstream file;
+	file.open("saves/highscores.txt");
+
+	Difficulty diff = Difficulty::BEGINNER;
+	std::string line;
+	while (std::getline(file, line))
+	{
+		if (line.find("#BEGINNER") != std::string::npos)
+		{
+			diff = Difficulty::BEGINNER;
+			continue;
+		}
+		else if (line.find("#INTERMEDIATE") != std::string::npos)
+		{
+			diff = Difficulty::INTERMEDIATE;
+			continue;
+		}
+		else if (line.find("#EXPERT") != std::string::npos)
+		{
+			diff = Difficulty::EXPERT;
+			continue;
+		}
+		else if (line.find("#STATS") != std::string::npos)
+		{
+			diff = Difficulty::STATS;
+			continue;
+		}
+		filedata[diff] << line;
+	}
+
+	for (int diff = 0; diff < 3; diff++)
+	{
+		for (int place = 0; place < 10; place++)
+		{
+			Score s;
+			std::string temp;
+			filedata[diff] >> temp;
+
+			if (temp != "-")
+			{
+				s.year = std::stoi(temp.substr(0, 4));
+				s.month = std::stoi(temp.substr(4, 2));
+				s.day = std::stoi(temp.substr(6, 2));
+				s.hour = std::stoi(temp.substr(10, 2));
+				s.minute = std::stoi(temp.substr(12, 2));
+				s.second = std::stoi(temp.substr(14, 2));
+				s.time = (uint16_t)std::stoi(temp.substr(18, 4));
+			}
+			m_scoreData[(Difficulty)diff][place] = s;
+		}
+	}
+	file.close();
+}
+
+void Highscores::saveData()
+{
+	std::ofstream file;
+	file.open("saves/highscores.txt");
+	for (int diff = 0; diff < 3; diff++)
+	{
+		if (diff == 0)
+		{
+			file << "#BEGINNER\n";
+		}
+		else if (diff == 1)
+		{
+			file << "#INTERMEDIATE\n";
+		}
+		else if (diff == 2)
+		{
+			file << "#EXPERT\n";
+		}
+		for (int place = 0; place < 10; place++)
+		{
+			std::ostringstream oss;
+			Score score = m_scoreData[(Difficulty)diff][place];
+			oss << std::setw(4) << std::setfill('0') << std::to_string(score.year);
+			file << oss.str();
+			oss.clear();
+			oss << std::setw(2) << std::setfill('0') << std::to_string(score.month);
+			file << oss.str();
+			oss.clear();
+			oss << std::setw(2) << std::setfill('0') << std::to_string(score.day);
+			file << oss.str();
+			oss.clear();
+			file << "--";
+			oss << std::setw(2) << std::setfill('0') << std::to_string(score.hour);
+			file << oss.str();
+			oss.clear();
+			oss << std::setw(2) << std::setfill('0') << std::to_string(score.minute);
+			file << oss.str();
+			oss.clear();
+			oss << std::setw(2) << std::setfill('0') << std::to_string(score.second);
+			file << oss.str();
+			oss.clear();
+			file << "--";
+			oss << std::setw(4) << std::setfill('0') << std::to_string(score.time);
+			file << oss.str();
+			oss.clear();
+			file << " \n";
+		}
+		file << "\n";
+	}
+	file.close();
+}
+
+Score Highscores::newScore()
+{
+	std::stringstream now;
+	now << std::chrono::system_clock::now();
+	std::string ymd, hms;
+	now >> ymd;
+	now >> hms;
+	Score retScore = Score();
+	retScore.year = std::stoi(ymd.substr(0, 4));
+	retScore.month = std::stoi(ymd.substr(5, 2));
+	retScore.day = std::stoi(ymd.substr(8, 2));
+	retScore.hour = std::stoi(hms.substr(0, 2));
+	retScore.minute = std::stoi(hms.substr(3, 2));
+	retScore.second = (int)std::round(std::stof(hms.substr(6, 4)));
+	return retScore;
 }
