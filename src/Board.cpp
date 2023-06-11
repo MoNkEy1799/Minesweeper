@@ -62,6 +62,7 @@ const std::string StyleSheet::OUTER =
 	"QSpinBox{"
 		"background: #c0c0c0;"
 		"font-weight: bold;"
+		"selection-background-color: #808080;"
 		"border-top: 2px solid #808080;"
 		"border-left: 2px solid #808080;"
 		"border-bottom: 2px solid #ffffff;"
@@ -80,10 +81,10 @@ const std::string StyleSheet::MENU =
 		"background: #c0c0c0;}"
 
 	"QMenuBar::item::selected{"
-		"background: #b0b0b0;;}"
+		"background: #a0a0a0;;}"
 
 	"QMenu::item::selected{"
-		"background: #a0a0a0;}";
+		"background: #909090;}";
 
 Board::Board(int rows, int columns, int mineCount, int tileSize, QWidget* parent, MainWindow* main)
 	: QWidget(parent), mainWindow(main), flagCount(0),

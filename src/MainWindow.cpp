@@ -91,7 +91,7 @@ void MainWindow::makeSettings()
 	m_customSettings = new QWidget();
 	QGridLayout* layout = new QGridLayout();
 	m_customSettings->setLayout(layout);
-	m_customSettings->setMinimumSize(200, 100);
+	m_customSettings->setMinimumSize(220, 100);
 	m_customSettings->setWindowTitle("Settings");
 	m_customSettings->setStyleSheet(StyleSheet::OUTER.c_str());
 
@@ -117,7 +117,7 @@ void MainWindow::makeSettings()
 	connect(mineEdit, &QSpinBox::valueChanged, this, [this, mineEdit] { m_mineSetting = mineEdit->value(); });
 	
 	QPushButton* restart = new QPushButton("Restart Game");
-	connect(restart, &QPushButton::clicked, this, [this] { restartGame(); });
+	connect(restart, &QPushButton::clicked, this, [this] { m_customSettings->hide(); restartGame(); });
 
 	layout->addWidget(widthLabel, 0, 0);
 	layout->addWidget(widthEdit, 0, 1);
