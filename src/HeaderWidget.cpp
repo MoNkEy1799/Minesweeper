@@ -165,7 +165,7 @@ void Display::hideAll(int digit)
 Highscores::Highscores()
 {
 	loadData();
-	addScore(Difficulty::BEGINNER, 2);
+	addScore(Difficulty::BEGINNER, 1);
 	addScore(Difficulty::INTERMEDIATE, 200);
 	addScore(Difficulty::EXPERT, 4532);
 }
@@ -271,31 +271,41 @@ void Highscores::saveData()
 		}
 		for (int place = 0; place < 10; place++)
 		{
-			std::ostringstream oss;
 			Score score = m_scoreData[(Difficulty)diff][place];
-			oss << std::setw(4) << std::setfill('0') << std::to_string(score.year);
-			file << oss.str();
-			oss.clear();
-			oss << std::setw(2) << std::setfill('0') << std::to_string(score.month);
-			file << oss.str();
-			oss.clear();
-			oss << std::setw(2) << std::setfill('0') << std::to_string(score.day);
-			file << oss.str();
-			oss.clear();
+			if (score.year == 0)
+			{
+				file << "- \n";
+				continue;
+			}
+			std::ostringstream osy;
+			osy << std::setw(4) << std::setfill('0') << std::to_string(score.year);
+			file << osy.str();
+
+			std::ostringstream osm;
+			osm << std::setw(2) << std::setfill('0') << std::to_string(score.month);
+			file << osm.str();
+
+			std::ostringstream osd;
+			osd << std::setw(2) << std::setfill('0') << std::to_string(score.day);
+			file << osd.str();
 			file << "--";
-			oss << std::setw(2) << std::setfill('0') << std::to_string(score.hour);
-			file << oss.str();
-			oss.clear();
-			oss << std::setw(2) << std::setfill('0') << std::to_string(score.minute);
-			file << oss.str();
-			oss.clear();
+
+			std::ostringstream osh;
+			osh << std::setw(2) << std::setfill('0') << std::to_string(score.hour);
+			file << osh.str();
+
+			std::ostringstream osn;
+			osn << std::setw(2) << std::setfill('0') << std::to_string(score.minute);
+			file << osn.str();
+			
+			std::ostringstream oss;
 			oss << std::setw(2) << std::setfill('0') << std::to_string(score.second);
 			file << oss.str();
-			oss.clear();
 			file << "--";
-			oss << std::setw(4) << std::setfill('0') << std::to_string(score.time);
-			file << oss.str();
-			oss.clear();
+			
+			std::ostringstream ost;
+			ost << std::setw(4) << std::setfill('0') << std::to_string(score.time);
+			file << ost.str();
 			file << " \n";
 		}
 		file << "\n";
