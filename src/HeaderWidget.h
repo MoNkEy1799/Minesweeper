@@ -43,3 +43,23 @@ private:
 
 	void updateTime();
 };
+
+enum class Difficulty { BEGINNER, INTERMEDIATE, EXPERT };
+
+struct Score
+{
+	uint16_t time = ~0;
+	int year, month, day, hour, minute, second;
+};
+
+class Highscores
+{
+public:
+	Highscores();
+	void addScore(Difficulty diff, uint16_t seconds);
+
+private:
+	std::unordered_map<std::string, Score> data;
+	
+	bool loadData();
+};
