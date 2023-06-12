@@ -36,6 +36,7 @@ class Highscores
 public:
 	Highscores();
 	void addScore(Difficulty diff, uint16_t seconds);
+	std::string formattedScore(Difficulty diff, int placing, bool save);
 
 private:
 	std::unordered_map<Difficulty, std::array<Score, 10>> m_scoreData;
@@ -53,14 +54,15 @@ public:
 
 	void startTimer();
 	void resetTimer();
-	void stopTimer();
+	int stopTimer();
 	void changeMineCount(int count);
 	void changeSmiley(bool win, bool reset = false);
+
+	Highscores highscores;
 
 private:
 	MainWindow* m_mainWindow;
 	Display m_timer, m_counter;
-	Highscores m_highscores;
 	QPushButton* m_restart;
 	QTimer* m_qtimer;
 	int m_passedTime;

@@ -140,10 +140,10 @@ bool Board::checkForWin()
 	return false;
 }
 
-// copy pasta
 void Board::gameWon()
 {
-	mainWindow->header->stopTimer();
+	int time = mainWindow->header->stopTimer();
+	mainWindow->header->highscores.addScore(mainWindow->difficulty, (uint16_t)time);
 	mainWindow->header->changeSmiley(true);
 	mainWindow->header->changeMineCount(0);
 	for (Tile* tile : m_tiles)
@@ -156,6 +156,7 @@ void Board::gameWon()
 	}
 }
 
+// copy pasta
 void Board::gameOver(int id)
 {
 	mainWindow->header->stopTimer();

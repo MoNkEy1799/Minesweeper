@@ -18,7 +18,7 @@
 #include "Board.h"
 
 Header::Header(int size, QWidget* parent, MainWindow* main)
-	: QWidget(parent), m_mainWindow(main), m_counter(this), m_timer(this), m_qtimer(nullptr), m_passedTime(-1), m_highscores()
+	: QWidget(parent), m_mainWindow(main), m_counter(this), m_timer(this), m_qtimer(nullptr), m_passedTime(-1), highscores()
 {
 	setFixedSize(size, 46);
 	setStyleSheet(StyleSheet::HEADER.c_str());
@@ -52,9 +52,10 @@ void Header::resetTimer()
 	updateTime();
 }
 
-void Header::stopTimer()
+int Header::stopTimer()
 {
 	m_qtimer->stop();
+	return m_passedTime;
 }
 
 void Header::changeMineCount(int count)
@@ -165,13 +166,14 @@ void Display::hideAll(int digit)
 Highscores::Highscores()
 {
 	loadData();
-	addScore(Difficulty::BEGINNER, 1);
-	addScore(Difficulty::INTERMEDIATE, 200);
-	addScore(Difficulty::EXPERT, 4532);
 }
 
 void Highscores::addScore(Difficulty diff, uint16_t seconds)
 {
+	if (diff == Difficulty::STATS)
+	{
+		return;
+	}
 	for (int i = 0; i < 10; i++)
 	{
 		if (seconds < m_scoreData[diff][i].time)
@@ -186,11 +188,76 @@ void Highscores::addScore(Difficulty diff, uint16_t seconds)
 	saveData();
 }
 
+std::string Highscores::formattedScore(Difficulty diff, int placing, bool save)
+{
+	Score& score = m_scoreData[diff][placing];
+	if (score.year == 0)
+	{
+		return std::string("- \n");
+	}
+
+	std::string format;
+	std::string dateSep = ".";
+	std::string timeSep = ":";
+	std::string sep = " -- ";
+	if (save)
+	{
+		dateSep = "";
+		timeSep = "";
+		sep = "--";
+	}
+
+	std::ostringstream osd;
+	osd << std::setw(2) << std::setfill('0') << std::to_string(score.day);
+	format += osd.str();
+	format += dateSep;
+
+	std::ostringstream osm;
+	osm << std::setw(2) << std::setfill('0') << std::to_string(score.month);
+	format += osm.str();
+	format += dateSep;
+
+	std::ostringstream osy;
+	osy << std::setw(4) << std::setfill('0') << std::to_string(score.year);
+	format += osy.str();
+
+	format += sep;
+
+	std::ostringstream osh;
+	osh << std::setw(2) << std::setfill('0') << std::to_string(score.hour);
+	format += osh.str();
+	format += timeSep;
+
+	std::ostringstream osn;
+	osn << std::setw(2) << std::setfill('0') << std::to_string(score.minute);
+	format += osn.str();
+	format += timeSep;
+
+	std::ostringstream oss;
+	oss << std::setw(2) << std::setfill('0') << std::to_string(score.second);
+	format += oss.str();
+
+	format += sep;
+
+	if (save)
+	{
+		std::ostringstream ost;
+		ost << std::setw(4) << std::setfill('0') << std::to_string(score.time) + " \n";
+		format += ost.str();
+	}
+	else
+	{
+		format += std::to_string(score.time) + " s";
+	}
+
+	return format;
+}
+
 void Highscores::shiftData(Difficulty diff, int index)
 {
-	for (int i = index; i < 9; i++)
+	for (int i = 9; i > index; i--)
 	{
-		m_scoreData[diff][i] = m_scoreData[diff][i + 1];
+		m_scoreData[diff][i] = m_scoreData[diff][i - 1];
 	}
 }
 
@@ -231,21 +298,21 @@ void Highscores::loadData()
 	{
 		for (int place = 0; place < 10; place++)
 		{
-			Score s;
+			Score score;
 			std::string temp;
 			filedata[diff] >> temp;
 
 			if (temp != "-")
 			{
-				s.year = std::stoi(temp.substr(0, 4));
-				s.month = std::stoi(temp.substr(4, 2));
-				s.day = std::stoi(temp.substr(6, 2));
-				s.hour = std::stoi(temp.substr(10, 2));
-				s.minute = std::stoi(temp.substr(12, 2));
-				s.second = std::stoi(temp.substr(14, 2));
-				s.time = (uint16_t)std::stoi(temp.substr(18, 4));
+				score.day = std::stoi(temp.substr(0, 2));
+				score.month = std::stoi(temp.substr(2, 2));
+				score.year = std::stoi(temp.substr(4, 4));
+				score.hour = std::stoi(temp.substr(10, 2));
+				score.minute = std::stoi(temp.substr(12, 2));
+				score.second = std::stoi(temp.substr(14, 2));
+				score.time = (uint16_t)std::stoi(temp.substr(18, 4));
 			}
-			m_scoreData[(Difficulty)diff][place] = s;
+			m_scoreData[(Difficulty)diff][place] = score;
 		}
 	}
 	file.close();
@@ -271,45 +338,12 @@ void Highscores::saveData()
 		}
 		for (int place = 0; place < 10; place++)
 		{
-			Score score = m_scoreData[(Difficulty)diff][place];
-			if (score.year == 0)
-			{
-				file << "- \n";
-				continue;
-			}
-			std::ostringstream osy;
-			osy << std::setw(4) << std::setfill('0') << std::to_string(score.year);
-			file << osy.str();
-
-			std::ostringstream osm;
-			osm << std::setw(2) << std::setfill('0') << std::to_string(score.month);
-			file << osm.str();
-
-			std::ostringstream osd;
-			osd << std::setw(2) << std::setfill('0') << std::to_string(score.day);
-			file << osd.str();
-			file << "--";
-
-			std::ostringstream osh;
-			osh << std::setw(2) << std::setfill('0') << std::to_string(score.hour);
-			file << osh.str();
-
-			std::ostringstream osn;
-			osn << std::setw(2) << std::setfill('0') << std::to_string(score.minute);
-			file << osn.str();
-			
-			std::ostringstream oss;
-			oss << std::setw(2) << std::setfill('0') << std::to_string(score.second);
-			file << oss.str();
-			file << "--";
-			
-			std::ostringstream ost;
-			ost << std::setw(4) << std::setfill('0') << std::to_string(score.time);
-			file << ost.str();
-			file << " \n";
+			Score& score = m_scoreData[(Difficulty)diff][place];
+			file << formattedScore((Difficulty)diff, place, true);
 		}
 		file << "\n";
 	}
+	file << "#STATS\n";
 	file.close();
 }
 
@@ -320,7 +354,7 @@ Score Highscores::newScore()
 	std::string ymd, hms;
 	now >> ymd;
 	now >> hms;
-	Score retScore = Score();
+	Score retScore;
 	retScore.year = std::stoi(ymd.substr(0, 4));
 	retScore.month = std::stoi(ymd.substr(5, 2));
 	retScore.day = std::stoi(ymd.substr(8, 2));
