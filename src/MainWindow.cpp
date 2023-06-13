@@ -16,7 +16,8 @@
 
 MainWindow::MainWindow(QWidget* parent)
 	: QMainWindow(parent), board(nullptr), m_mainWidget(nullptr), header(nullptr), m_layout(nullptr),
-	m_customSettings(nullptr), m_highscoreWidget(nullptr), m_rowSetting(16), m_colSetting(16), m_mineSetting(40)
+	m_customSettings(nullptr), m_highscoreWidget(nullptr),
+	m_rowSetting(8), m_colSetting(8), m_mineSetting(10), difficulty(Difficulty::BEGINNER)
 {
 	header = new Header(m_colSetting * 20 + 4, this, this);
 	header->changeMineCount(m_mineSetting);
@@ -35,6 +36,7 @@ MainWindow::MainWindow(QWidget* parent)
 	m_mainWidget->setStyleSheet(StyleSheet::OUTER.c_str());
 	m_mainWidget->setFixedSize(m_colSetting * 20 + 24, m_rowSetting * 20 + 84);
 	setCentralWidget(m_mainWidget);
+	setFixedSize(m_mainWidget->size() + QSize(0, 22));
 }
 
 void MainWindow::restartGame()
@@ -134,6 +136,10 @@ void MainWindow::makeSettings()
 
 void MainWindow::makeHighscores()
 {
+	if (m_highscoreWidget)
+	{
+		m_highscoreWidget->deleteLater();
+	}
 	m_highscoreWidget = new QWidget();
 	QGridLayout* layout = new QGridLayout();
 	m_highscoreWidget->setLayout(layout);

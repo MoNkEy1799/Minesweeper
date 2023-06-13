@@ -58,23 +58,16 @@ const std::string StyleSheet::OUTER =
 		"border-left: 2px solid #ffffff;"
 		"border-bottom: 2px solid #808080;"
 		"border-right: 2px solid #808080;}"
-	
+
 	"QSpinBox{"
 		"background: #c0c0c0;"
 		"font-weight: bold;"
 		"selection-background-color: #808080;"
-		"border-top: 2px solid #808080;"
-		"border-left: 2px solid #808080;"
-		"border-bottom: 2px solid #ffffff;"
-		"border-right: 2px solid #ffffff;}"
 
 	"QLabel{"
-		"background: #c0c0c0;"
+		"background: pink;"
 		"font-weight: bold;"
-		"border-top: 2px solid #808080;"
-		"border-left: 2px solid #808080;"
-		"border-bottom: 2px solid #ffffff;"
-		"border-right: 2px solid #ffffff;}";
+		"border: 2px solid #808080;";
 
 const std::string StyleSheet::MENU =
 	"QMenuBar{"

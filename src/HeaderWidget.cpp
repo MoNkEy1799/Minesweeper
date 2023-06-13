@@ -18,7 +18,8 @@
 #include "Board.h"
 
 Header::Header(int size, QWidget* parent, MainWindow* main)
-	: QWidget(parent), m_mainWindow(main), m_counter(this), m_timer(this), m_qtimer(nullptr), m_passedTime(-1), highscores()
+	: QWidget(parent), m_mainWindow(main), m_counter(this), m_timer(this),
+	m_qtimer(nullptr), m_passedTime(-1), highscores(main)
 {
 	setFixedSize(size, 46);
 	setStyleSheet(StyleSheet::HEADER.c_str());
@@ -163,7 +164,8 @@ void Display::hideAll(int digit)
 	}
 }
 
-Highscores::Highscores()
+Highscores::Highscores(MainWindow* main)
+	: m_mainWindow(main)
 {
 	loadData();
 }
@@ -182,12 +184,14 @@ void Highscores::addScore(Difficulty diff, uint16_t seconds)
 			Score s = newScore();
 			s.time = seconds;
 			m_scoreData[diff][i] = s;
+			saveData();
+			m_mainWindow->makeHighscores();
 			break;
 		}
 	}
-	saveData();
 }
 
+// this is more than ugly
 std::string Highscores::formattedScore(Difficulty diff, int placing, bool save)
 {
 	Score& score = m_scoreData[diff][placing];
@@ -358,7 +362,7 @@ Score Highscores::newScore()
 	retScore.year = std::stoi(ymd.substr(0, 4));
 	retScore.month = std::stoi(ymd.substr(5, 2));
 	retScore.day = std::stoi(ymd.substr(8, 2));
-	retScore.hour = std::stoi(hms.substr(0, 2));
+	retScore.hour = (std::stoi(hms.substr(0, 2)) + 2) % 24;
 	retScore.minute = std::stoi(hms.substr(3, 2));
 	retScore.second = (int)std::round(std::stof(hms.substr(6, 4)));
 	return retScore;

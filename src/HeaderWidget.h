@@ -34,12 +34,13 @@ struct Score
 class Highscores
 {
 public:
-	Highscores();
+	Highscores(MainWindow* main = nullptr);
 	void addScore(Difficulty diff, uint16_t seconds);
 	std::string formattedScore(Difficulty diff, int placing, bool save);
 
 private:
 	std::unordered_map<Difficulty, std::array<Score, 10>> m_scoreData;
+	MainWindow* m_mainWindow;
 	
 	void shiftData(Difficulty diff, int index);
 	void loadData();
