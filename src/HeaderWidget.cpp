@@ -366,7 +366,7 @@ Score Highscores::newScore()
 	retScore.year = std::stoi(ymd.substr(0, 4));
 	retScore.month = std::stoi(ymd.substr(5, 2));
 	retScore.day = std::stoi(ymd.substr(8, 2));
-	retScore.hour = (std::stoi(hms.substr(0, 2)) + 2) % 24;
+	retScore.hour = (std::stoi(hms.substr(0, 2)) + 1) % 24;
 	retScore.minute = std::stoi(hms.substr(3, 2));
 	retScore.second = (int)std::round(std::stof(hms.substr(6, 4)));
 	return retScore;
