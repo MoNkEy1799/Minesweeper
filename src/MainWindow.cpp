@@ -6,6 +6,7 @@
 #include <QPushButton>
 #include <QMenu>
 #include <QMenuBar>
+#include <QIcon>
 
 #include <string>
 
@@ -37,6 +38,7 @@ MainWindow::MainWindow(QWidget* parent)
 	m_mainWidget->setFixedSize(m_colSetting * 20 + 24, m_rowSetting * 20 + 84);
 	setCentralWidget(m_mainWidget);
 	setFixedSize(m_mainWidget->size() + QSize(0, 22));
+	setWindowIcon(QIcon("resources/tile/mine.png"));
 }
 
 void MainWindow::restartGame()
