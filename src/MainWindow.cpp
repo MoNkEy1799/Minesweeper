@@ -104,20 +104,54 @@ void MainWindow::makeSettings()
 	QLabel* widthLabel = new QLabel("Width: ");
 	QSpinBox* widthEdit = new QSpinBox();
 	widthEdit->setValue(m_colSetting);
+	widthEdit->setPrefix("00");
 	widthEdit->setMaximum(40);
 	widthEdit->setMinimum(7);
 	
 	QLabel* heightLabel = new QLabel("Height: ");
 	QSpinBox* heightEdit = new QSpinBox();
 	heightEdit->setValue(m_rowSetting);
+	heightEdit->setPrefix("00");
 	heightEdit->setMaximum(40);
 	heightEdit->setMinimum(2);
 	
 	QLabel* mineLabel = new QLabel("Mines: ");
 	QSpinBox* mineEdit = new QSpinBox();
 	mineEdit->setValue(m_mineSetting);
+	mineEdit->setPrefix("0");
 	mineEdit->setMaximum(700);
 	mineEdit->setMinimum(1);
+
+	auto pre = [widthEdit, heightEdit, mineEdit]
+	{
+		if (widthEdit->value() > 9)
+		{
+			widthEdit->setPrefix("0");
+		}
+		else
+		{
+			widthEdit->setPrefix("00");
+		}
+		if (heightEdit->value() > 9)
+		{
+			heightEdit->setPrefix("0");
+		}
+		else
+		{
+			heightEdit->setPrefix("00");
+		}
+		if (mineEdit->value() > 9)
+		{
+			mineEdit->setPrefix("0");
+		}
+		else
+		{
+			mineEdit->setPrefix("00");
+		}
+	};
+	connect(widthEdit, &QSpinBox::valueChanged, this, pre);
+	connect(heightEdit, &QSpinBox::valueChanged, this, pre);
+	connect(mineEdit, &QSpinBox::valueChanged, this, pre);
 	
 	QPushButton* restart = new QPushButton("Restart Game");
 	auto custom = [this, widthEdit, heightEdit, mineEdit] { m_colSetting = widthEdit->value();

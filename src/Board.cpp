@@ -48,7 +48,7 @@ const std::string StyleSheet::HEADER =
 
 	"QLabel{"
 		"background: #000000;"
-		"border: 0px solid;}";
+		"border: 0px;}";
 
 const std::string StyleSheet::OUTER =
 	"QWidget{"
@@ -60,14 +60,17 @@ const std::string StyleSheet::OUTER =
 		"border-right: 2px solid #808080;}"
 
 	"QSpinBox{"
-		"background: #c0c0c0;"
+		"background: #111111;"
+		"color: #ff0000;"
 		"font-weight: bold;"
-		"selection-background-color: #808080;"
+		"selection-background-color: transparent;"
+		"selection-color: #ff0000;"
+		"border: 0px;}"
 
 	"QLabel{"
-		"background: pink;"
+		"background: lightblue;"
 		"font-weight: bold;"
-		"border: 2px solid #808080;";
+		"border: 2px solid #808080;}";
 
 const std::string StyleSheet::MENU =
 	"QMenuBar{"
