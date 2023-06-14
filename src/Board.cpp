@@ -68,7 +68,7 @@ const std::string StyleSheet::OUTER =
 		"border: 0px;}"
 
 	"QLabel{"
-		"background: lightblue;"
+		"background: #c0c0c0;"
 		"font-weight: bold;"
 		"border: 2px solid #808080;}";
 

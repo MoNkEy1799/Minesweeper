@@ -101,23 +101,33 @@ void MainWindow::makeSettings()
 	m_customSettings->setWindowTitle("Settings");
 	m_customSettings->setStyleSheet(StyleSheet::OUTER.c_str());
 
+
 	QLabel* widthLabel = new QLabel("Width: ");
+	widthLabel->setStyleSheet("color: #0100fe");
+	widthLabel->setFixedSize(60, 20);
 	QSpinBox* widthEdit = new QSpinBox();
 	widthEdit->setValue(m_colSetting);
+	widthEdit->setFixedSize(60, 20);
 	widthEdit->setPrefix("00");
 	widthEdit->setMaximum(40);
 	widthEdit->setMinimum(7);
 	
 	QLabel* heightLabel = new QLabel("Height: ");
+	heightLabel->setStyleSheet("color: #008001");
+	heightLabel->setFixedSize(60, 20);
 	QSpinBox* heightEdit = new QSpinBox();
 	heightEdit->setValue(m_rowSetting);
+	heightEdit->setFixedSize(60, 20);
 	heightEdit->setPrefix("00");
 	heightEdit->setMaximum(40);
 	heightEdit->setMinimum(2);
 	
 	QLabel* mineLabel = new QLabel("Mines: ");
+	mineLabel->setStyleSheet("color: #fe0000");
+	mineLabel->setFixedSize(60, 20);
 	QSpinBox* mineEdit = new QSpinBox();
 	mineEdit->setValue(m_mineSetting);
+	mineEdit->setFixedSize(60, 20);
 	mineEdit->setPrefix("0");
 	mineEdit->setMaximum(700);
 	mineEdit->setMinimum(1);
@@ -154,6 +164,7 @@ void MainWindow::makeSettings()
 	connect(mineEdit, &QSpinBox::valueChanged, this, pre);
 	
 	QPushButton* restart = new QPushButton("Restart Game");
+	restart->setStyleSheet("color: #008081");
 	auto custom = [this, widthEdit, heightEdit, mineEdit] { m_colSetting = widthEdit->value();
 				   m_rowSetting = heightEdit->value(); m_mineSetting = mineEdit->value();
 				   difficulty = Difficulty::STATS; m_customSettings->hide(); restartGame(); };
@@ -181,28 +192,44 @@ void MainWindow::makeHighscores()
 	m_highscoreWidget->setWindowTitle("Highscores");
 	m_highscoreWidget->setStyleSheet(StyleSheet::OUTER.c_str());
 
-	layout->addWidget(new QLabel("HIGHSCORES"), 0, 0);
+	QLabel* high = new QLabel("HIGHSCORES");
+	high->setAlignment(Qt::AlignCenter);
+	high->setStyleSheet("color: #008081");
+	layout->addWidget(high, 0, 0, 1, 2);
 	for (int diff = 0; diff < 3; diff++)
 	{
-		std::string label;
+		std::string label, style;
 		if (diff == 0)
 		{
 			label = "Beginner:";
+			style = "color: #0100fe";
 		}
 		else if (diff == 1)
 		{
 			label = "Intermediate:";
+			style = "color: #008001";
 		}
 		else if (diff == 2)
 		{
 			label = "Expert:";
+			style = "color: #fe0000";
 		}
-		layout->addWidget(new QLabel(label.c_str()), 1 + diff * 11, 0);
+		QLabel* difficulty = new QLabel(label.c_str());
+		difficulty->setStyleSheet(style.c_str());
+		layout->addWidget(difficulty, 1 + diff * 6, 0, 1, 2);
 
 		for (int place = 0; place < 10; place++)
 		{
-			QLabel* qlabel = new QLabel(header->highscores.formattedScore((Difficulty)diff, place, false).c_str());
-			layout->addWidget(qlabel, 2 + diff * 11 + place, 0);
+			std::string score = header->highscores.formattedScore((Difficulty)diff, place, false);
+			QLabel* qlabel = new QLabel((std::to_string(place + 1) + ". " + score).c_str());
+			if (place < 5)
+			{
+				layout->addWidget(qlabel, 2 + diff * 6 + (place % 5), 0, 1, 1);
+			}
+			else
+			{
+				layout->addWidget(qlabel, 2 + diff * 6 + (place % 5), 1, 1, 1);
+			}
 		}
 	}
 }

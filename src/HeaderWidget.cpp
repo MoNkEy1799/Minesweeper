@@ -197,13 +197,17 @@ std::string Highscores::formattedScore(Difficulty diff, int placing, bool save)
 	Score& score = m_scoreData[diff][placing];
 	if (score.year == 0)
 	{
-		return std::string("- \n");
+		if (save)
+		{
+			return std::string("- \n");
+		}
+		return std::string("-");
 	}
 
 	std::string format;
 	std::string dateSep = ".";
 	std::string timeSep = ":";
-	std::string sep = " -- ";
+	std::string sep = " - ";
 	if (save)
 	{
 		dateSep = "";
