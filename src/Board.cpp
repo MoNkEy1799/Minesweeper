@@ -77,7 +77,7 @@ const std::string StyleSheet::MENU =
 		"background: #c0c0c0;}"
 
 	"QMenuBar::item::selected{"
-		"background: #a0a0a0;;}"
+		"background: #a0a0a0;}"
 
 	"QMenu::item::selected{"
 		"background: #909090;}";
@@ -159,7 +159,7 @@ void Board::gameOver(int id)
 {
 	int time = mainWindow->header->stopTimer();
 	mainWindow->header->highscores.addStat(Stats::LOST, 1);
-	mainWindow->header->highscores.addStat(Stats::TIME, 1, true);
+	mainWindow->header->highscores.addStat(Stats::TIME, time, true);
 	mainWindow->header->changeSmiley(false);
 	for (Tile* tile : m_tiles)
 	{
