@@ -19,6 +19,7 @@ public:
 	void makeMenu();
 	void makeSettings();
 	void makeHighscores();
+	void makeStatsWidget();
 
 	Board* board;
 	Header* header;
@@ -28,6 +29,7 @@ private:
 	QWidget* m_mainWidget;
 	QWidget* m_customSettings;
 	QWidget* m_highscoreWidget;
+	QWidget* m_statsWidget;
 	QGridLayout* m_layout;
 	int m_rowSetting, m_colSetting, m_mineSetting;
 };

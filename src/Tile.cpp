@@ -195,10 +195,12 @@ void Tile::mouseReleaseEvent(QMouseEvent* event)
 {
 	if (event->button() == Qt::LeftButton)
 	{
+		m_board->mainWindow->header->highscores.addStat(Stats::LEFT, 1);
 		Tile::currentButton = MouseButton::LEFT;
 	}
 	else if (event->button() == Qt::RightButton)
 	{
+		m_board->mainWindow->header->highscores.addStat(Stats::RIGHT, 1);
 		Tile::currentButton = MouseButton::RIGHT;
 		emit QPushButton::clicked();
 	}

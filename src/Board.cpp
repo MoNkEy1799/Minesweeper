@@ -140,6 +140,8 @@ void Board::gameWon()
 {
 	int time = mainWindow->header->stopTimer();
 	mainWindow->header->highscores.addScore(mainWindow->difficulty, (uint16_t)time);
+	mainWindow->header->highscores.addStat(Stats::WON, 1);
+	mainWindow->header->highscores.addStat(Stats::TIME, time, true);
 	mainWindow->header->changeSmiley(true);
 	mainWindow->header->changeMineCount(0);
 	for (Tile* tile : m_tiles)
@@ -155,7 +157,9 @@ void Board::gameWon()
 // copy pasta
 void Board::gameOver(int id)
 {
-	mainWindow->header->stopTimer();
+	int time = mainWindow->header->stopTimer();
+	mainWindow->header->highscores.addStat(Stats::LOST, 1);
+	mainWindow->header->highscores.addStat(Stats::TIME, 1, true);
 	mainWindow->header->changeSmiley(false);
 	for (Tile* tile : m_tiles)
 	{
@@ -192,6 +196,7 @@ void Board::activateMines(int activator)
 	}
 
 	mainWindow->header->startTimer();
+	mainWindow->header->highscores.addStat(Stats::GAMES, 1, true);
 	std::set<int> setMines;
 	Random r;
 

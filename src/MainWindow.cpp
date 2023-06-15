@@ -17,7 +17,7 @@
 
 MainWindow::MainWindow(QWidget* parent)
 	: QMainWindow(parent), board(nullptr), m_mainWidget(nullptr), header(nullptr), m_layout(nullptr),
-	m_customSettings(nullptr), m_highscoreWidget(nullptr),
+	m_customSettings(nullptr), m_highscoreWidget(nullptr), m_statsWidget(nullptr),
 	m_rowSetting(8), m_colSetting(8), m_mineSetting(10), difficulty(Difficulty::BEGINNER)
 {
 	header = new Header(m_colSetting * 20 + 4, this, this);
@@ -27,6 +27,7 @@ MainWindow::MainWindow(QWidget* parent)
 	makeMenu();
 	makeSettings();
 	makeHighscores();
+	makeStatsWidget();
 
 	m_layout = new QGridLayout();
 	m_layout->addWidget(header, 0, 0, Qt::AlignCenter);
@@ -38,7 +39,7 @@ MainWindow::MainWindow(QWidget* parent)
 	m_mainWidget->setFixedSize(m_colSetting * 20 + 24, m_rowSetting * 20 + 84);
 	setCentralWidget(m_mainWidget);
 	setFixedSize(m_mainWidget->size() + QSize(0, 22));
-	setWindowIcon(QIcon("resources/tile/mine.png"));
+	setWindowIcon(QIcon("resources/tiles/mine.png"));
 }
 
 void MainWindow::restartGame()
@@ -74,9 +75,29 @@ void MainWindow::makeMenu()
 {
 	menuBar()->setFixedWidth(m_colSetting * 20 + 24);
 	menuBar()->setStyleSheet(StyleSheet::MENU.c_str());
-	QMenu* menu = menuBar()->addMenu("New Game");
+	QMenu* menu = menuBar()->addMenu("Game");
+
 	QAction* highscore = menuBar()->addAction("Highscores");
-	connect(highscore, &QAction::triggered, this, [this] { m_highscoreWidget->show(); });
+	auto scoreTrig = [this]
+	{
+		if (header->highscores.scoreChanged)
+		{
+			makeHighscores();
+		}
+		m_highscoreWidget->show();
+	};
+	connect(highscore, &QAction::triggered, this, scoreTrig);
+
+	QAction* stats = menuBar()->addAction("Stats");
+	auto statTrig = [this]
+	{
+		if (header->highscores.statChanged)
+		{
+			makeStatsWidget();
+		}
+		m_statsWidget->show();
+	};
+	connect(stats, &QAction::triggered, this, statTrig);
 
 	QAction* beginner = menu->addAction("Beginner");
 	QAction* inter = menu->addAction("Intermediate");
@@ -102,7 +123,7 @@ void MainWindow::makeSettings()
 	m_customSettings->setMinimumSize(220, 100);
 	m_customSettings->setWindowTitle("Settings");
 	m_customSettings->setStyleSheet(StyleSheet::OUTER.c_str());
-
+	m_customSettings->setWindowIcon(QIcon("resources/tiles/win.png"));
 
 	QLabel* widthLabel = new QLabel("Width: ");
 	widthLabel->setStyleSheet("color: #0100fe");
@@ -186,6 +207,7 @@ void MainWindow::makeHighscores()
 	if (m_highscoreWidget)
 	{
 		m_highscoreWidget->deleteLater();
+		header->highscores.scoreChanged = false;
 	}
 	m_highscoreWidget = new QWidget();
 	QGridLayout* layout = new QGridLayout();
@@ -193,6 +215,7 @@ void MainWindow::makeHighscores()
 	m_highscoreWidget->setMinimumSize(400, 300);
 	m_highscoreWidget->setWindowTitle("Highscores");
 	m_highscoreWidget->setStyleSheet(StyleSheet::OUTER.c_str());
+	m_highscoreWidget->setWindowIcon(QIcon("resources/tiles/flag.png"));
 
 	QLabel* high = new QLabel("HIGHSCORES");
 	high->setAlignment(Qt::AlignCenter);
@@ -233,5 +256,38 @@ void MainWindow::makeHighscores()
 				layout->addWidget(qlabel, 2 + diff * 6 + (place % 5), 1, 1, 1);
 			}
 		}
+	}
+}
+
+void MainWindow::makeStatsWidget()
+{
+	if (m_statsWidget)
+	{
+		m_statsWidget->deleteLater();
+		header->highscores.statChanged = false;
+	}
+	m_statsWidget = new QWidget();
+	QGridLayout* layout = new QGridLayout();
+	m_statsWidget->setLayout(layout);
+	m_statsWidget->setMinimumSize(240, 120);
+	m_statsWidget->setWindowTitle("Game Stats");
+	m_statsWidget->setStyleSheet(StyleSheet::OUTER.c_str());
+	m_statsWidget->setWindowIcon(QIcon("resources/tiles/eight.png"));
+
+	QLabel* game = new QLabel("Games played: ");
+	layout->addWidget(game, 1, 0);
+	QLabel* won = new QLabel("Games won: ");
+	layout->addWidget(won, 2, 0);
+	QLabel* lost = new QLabel("Games lost: ");
+	layout->addWidget(lost, 3, 0);
+	QLabel* time = new QLabel("Total time played: ");
+	layout->addWidget(time, 4, 0);
+	QLabel* left = new QLabel("Left clicks: ");
+	layout->addWidget(left, 5, 0);
+	QLabel* right = new QLabel("Right clicks: ");
+	layout->addWidget(right, 6, 0);
+	for (int stat = 0; stat < 6; stat++)
+	{
+		layout->addWidget(new QLabel(header->highscores.getStat((Stats)stat).c_str()), stat + 1, 1);
 	}
 }

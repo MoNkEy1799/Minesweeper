@@ -165,7 +165,7 @@ void Display::hideAll(int digit)
 }
 
 Highscores::Highscores(MainWindow* main)
-	: m_mainWindow(main)
+	: m_mainWindow(main), scoreChanged(false), statChanged(false)
 {
 	loadData();
 }
@@ -185,10 +185,20 @@ void Highscores::addScore(Difficulty diff, uint16_t seconds)
 			s.time = seconds;
 			m_scoreData[diff][i] = s;
 			saveData();
-			m_mainWindow->makeHighscores();
+			scoreChanged = true;
 			break;
 		}
 	}
+}
+
+void Highscores::addStat(Stats stat, uint32_t addCount, bool save)
+{
+	m_stats[stat] += addCount;
+	if (save)
+	{
+		saveData();
+	}
+	statChanged = true;
 }
 
 // this is more than ugly
@@ -261,6 +271,11 @@ std::string Highscores::formattedScore(Difficulty diff, int placing, bool save)
 	return format;
 }
 
+std::string Highscores::getStat(Stats stat)
+{
+	return std::to_string(m_stats[(int)stat]);
+}
+
 void Highscores::shiftData(Difficulty diff, int index)
 {
 	for (int i = 9; i > index; i--)
@@ -323,6 +338,12 @@ void Highscores::loadData()
 			m_scoreData[(Difficulty)diff][place] = score;
 		}
 	}
+	for (int stat = 0; stat < 6; stat++)
+	{
+		std::string temp;
+		filedata[3] >> temp;
+		m_stats[stat] = std::stoi(temp);
+	}
 	file.close();
 }
 
@@ -352,6 +373,10 @@ void Highscores::saveData()
 		file << "\n";
 	}
 	file << "#STATS\n";
+	for (int stat = 0; stat < 6; stat++)
+	{
+		file << std::to_string(m_stats[stat]) + " \n";
+	}
 	file.close();
 }
 
